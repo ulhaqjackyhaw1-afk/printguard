@@ -1,0 +1,6 @@
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\PrintGuard.Application.csproj.AssemblyReference.cache
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\PrintGuard.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\PrintGuard.Application.AssemblyInfoInputs.cache
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\PrintGuard.Application.AssemblyInfo.cs
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\PrintGuard.Application.csproj.CoreCompileInputs.cache
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\PrintGuard.Application.sourcelink.json
