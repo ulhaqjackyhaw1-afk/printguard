@@ -58,16 +58,22 @@ public class Worker : BackgroundService
                     lastHeartbeat = DateTime.UtcNow;
                 }
 
-                // Spooler Queue Monitoring
-                foreach (var printer in watchedPrinters)
+                // Spooler Queue Monitoring (dynamic over all installed physical/virtual printers)
+                var printersToWatch = _config.GetSection("PrintGuard:WatchedPrinters").Get<string[]>() ?? Array.Empty<string>();
+                if (printersToWatch.Length == 0)
+                {
+                    printersToWatch = _spooler.GetInstalledPrinterNames().ToArray();
+                }
+
+                foreach (var printer in printersToWatch)
                 {
                     var jobs = _spooler.GetJobs(printer);
                     foreach (var job in jobs)
                     {
                         if (!_processedJobs.Contains(job.JobId))
                         {
-                            _logger.LogInformation("New print job detected: JobId={JobId}, Document={Doc}, User={User}",
-                                job.JobId, job.DocumentName, job.UserName);
+                            _logger.LogInformation("New print job detected: JobId={JobId}, Printer={Printer}, Document={Doc}, User={User}",
+                                job.JobId, printer, job.DocumentName, job.UserName);
 
                             // HOLD Job immediately (Fail-closed)
                             _spooler.HoldJob(printer, job.JobId);
@@ -149,11 +155,12 @@ public class Worker : BackgroundService
             var req = new CreatePrintJobRequest(
                 ServerJobId: $"SPOOL-{job.JobId}",
                 ComputerId: _computerId,
-                PrinterId: 1, // Mapped printer ID
+                PrinterId: 0,
                 DocumentName: job.DocumentName,
                 TotalPages: job.TotalPages > 0 ? job.TotalPages : 1,
                 Copies: 1,
-                ColorMode: "MONO"
+                ColorMode: "MONO",
+                PrinterName: printerName
             );
 
             var res = await _http.PostAsJsonAsync("print-jobs", req, ct);
@@ -213,21 +220,41 @@ public class Worker : BackgroundService
     {
         try
         {
-            var uiPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "PrintGuard.UI", "bin", "Debug", "net8.0-windows", "PrintGuard.UI.exe");
-            if (!File.Exists(uiPath))
-            {
-                uiPath = "PrintGuard.UI.exe";
-            }
+            var baseDir = AppContext.BaseDirectory;
+            var directExe = Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", "..", "PrintGuard.UI", "bin", "Debug", "net8.0-windows", "PrintGuard.UI.exe"));
+            var localExe = Path.Combine(baseDir, "PrintGuard.UI.exe");
+            var projectDir = Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", "..", "PrintGuard.UI"));
 
             var args = $"--job-id {dbJobId} --printer \"{printerName}\" --document \"{docName}\" --computer-id {_computerId} --spooler-id {spoolerJobId}";
-            _logger.LogInformation("Launching UI Popup: {Args}", args);
+            _logger.LogInformation("Launching UI Popup with args: {Args}", args);
 
-            Process.Start(new ProcessStartInfo
+            if (File.Exists(directExe))
             {
-                FileName = uiPath,
-                Arguments = args,
-                UseShellExecute = true
-            });
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = directExe,
+                    Arguments = args,
+                    UseShellExecute = true
+                });
+            }
+            else if (File.Exists(localExe))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = localExe,
+                    Arguments = args,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "dotnet",
+                    Arguments = $"run --project \"{projectDir}\" -- {args}",
+                    UseShellExecute = true
+                });
+            }
         }
         catch (Exception ex)
         {

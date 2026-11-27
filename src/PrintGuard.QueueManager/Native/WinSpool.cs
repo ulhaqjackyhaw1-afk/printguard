@@ -79,6 +79,45 @@ public static class WinSpool
         public int PagesPrinted;
     }
 
+    public const int PRINTER_ENUM_LOCAL = 0x00000002;
+    public const int PRINTER_ENUM_CONNECTIONS = 0x00000004;
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+    public struct PRINTER_INFO_2
+    {
+        public string? pServerName;
+        public string? pPrinterName;
+        public string? pShareName;
+        public string? pPortName;
+        public string? pDriverName;
+        public string? pComment;
+        public string? pLocation;
+        public IntPtr pDevMode;
+        public string? pSepFile;
+        public string? pPrintProcessor;
+        public string? pDatatype;
+        public string? pParameters;
+        public IntPtr pSecurityDescriptor;
+        public int Attributes;
+        public int Priority;
+        public int DefaultPriority;
+        public int StartTime;
+        public int UntilTime;
+        public int Status;
+        public int cJobs;
+        public int AveragePPM;
+    }
+
+    [DllImport("winspool.drv", CharSet = CharSet.Auto, SetLastError = true)]
+    public static extern bool EnumPrinters(
+        int Flags,
+        string? Name,
+        int Level,
+        IntPtr pPrinterEnum,
+        int cbBuf,
+        out int pcbNeeded,
+        out int pcReturned);
+
     [DllImport("winspool.drv", CharSet = CharSet.Auto, SetLastError = true)]
     public static extern bool OpenPrinter(string pPrinterName, out IntPtr phPrinter, ref PRINTER_DEFAULTS pDefault);
 

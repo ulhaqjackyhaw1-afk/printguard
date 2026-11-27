@@ -83,7 +83,8 @@ public record CreatePrintJobRequest(
     string DocumentName,
     int TotalPages = 1,
     int Copies = 1,
-    string ColorMode = "MONO"
+    string ColorMode = "MONO",
+    string? PrinterName = null
 );
 
 public record AuthorizePrintJobRequest(

@@ -22,23 +22,47 @@ public class PrintJobService : IPrintJobService
 
     public async Task<ApiResponse<PrintJobResponse>> RegisterPrintJobAsync(CreatePrintJobRequest request)
     {
-        var printer = await _db.Printers.FindAsync(request.PrinterId);
-        if (printer == null || !printer.IsActive)
+        Printer? printer = null;
+        if (request.PrinterId > 0)
         {
-            return ApiResponse<PrintJobResponse>.Fail("Specified printer is not registered or inactive");
+            printer = await _db.Printers.FindAsync(request.PrinterId);
+        }
+
+        if (printer == null && !string.IsNullOrEmpty(request.PrinterName))
+        {
+            printer = await _db.Printers.FirstOrDefaultAsync(p => p.Name.ToLower() == request.PrinterName.ToLower());
+        }
+
+        if (printer == null)
+        {
+            // Auto register printer if not yet in database
+            printer = new Printer
+            {
+                Name = !string.IsNullOrEmpty(request.PrinterName) ? request.PrinterName : $"Printer-{request.PrinterId}",
+                Model = "Auto-detected Printer",
+                Location = "Local PC",
+                PrinterServer = Environment.MachineName,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            };
+            _db.Printers.Add(printer);
+            await _db.SaveChangesAsync();
         }
 
         var computer = await _db.Computers.FindAsync(request.ComputerId);
         if (computer == null)
         {
-            return ApiResponse<PrintJobResponse>.Fail("Computer is not registered");
+            // Fallback computer
+            computer = await _db.Computers.FirstOrDefaultAsync();
         }
+
+        var computerId = computer?.Id ?? request.ComputerId;
 
         var job = new PrintJob
         {
             ServerJobId = request.ServerJobId,
-            ComputerId = request.ComputerId,
-            PrinterId = request.PrinterId,
+            ComputerId = computerId > 0 ? computerId : null,
+            PrinterId = printer.Id,
             DocumentName = request.DocumentName,
             TotalPages = request.TotalPages > 0 ? request.TotalPages : 1,
             Copies = request.Copies > 0 ? request.Copies : 1,

@@ -17,6 +17,37 @@ public record SpoolerJobDetail(
 
 public class SpoolerManager
 {
+    public List<string> GetInstalledPrinterNames()
+    {
+        var printers = new List<string>();
+        int flags = WinSpool.PRINTER_ENUM_LOCAL | WinSpool.PRINTER_ENUM_CONNECTIONS;
+        WinSpool.EnumPrinters(flags, null, 2, IntPtr.Zero, 0, out int bytesNeeded, out _);
+        if (bytesNeeded == 0) return printers;
+
+        var pBuf = Marshal.AllocHGlobal(bytesNeeded);
+        try
+        {
+            if (WinSpool.EnumPrinters(flags, null, 2, pBuf, bytesNeeded, out _, out int count))
+            {
+                var structSize = Marshal.SizeOf(typeof(WinSpool.PRINTER_INFO_2));
+                for (int i = 0; i < count; i++)
+                {
+                    var ptr = new IntPtr(pBuf.ToInt64() + (i * structSize));
+                    var info = Marshal.PtrToStructure<WinSpool.PRINTER_INFO_2>(ptr);
+                    if (!string.IsNullOrWhiteSpace(info.pPrinterName))
+                    {
+                        printers.Add(info.pPrinterName);
+                    }
+                }
+            }
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(pBuf);
+        }
+        return printers;
+    }
+
     public List<SpoolerJobDetail> GetJobs(string printerName)
     {
         var result = new List<SpoolerJobDetail>();
