@@ -1,0 +1,264 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Service\\PrintGuard.Service.csproj": {}
+  },
+  "projects": {
+    "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Application\\PrintGuard.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Application\\PrintGuard.Application.csproj",
+        "projectName": "PrintGuard.Application",
+        "projectPath": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Application\\PrintGuard.Application.csproj",
+        "packagesPath": "C:\\Users\\Magang ICT\\.nuget\\packages\\",
+        "outputPath": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Magang ICT\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Domain\\PrintGuard.Domain.csproj": {
+                "projectPath": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Domain\\PrintGuard.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.428/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Domain\\PrintGuard.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Domain\\PrintGuard.Domain.csproj",
+        "projectName": "PrintGuard.Domain",
+        "projectPath": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Domain\\PrintGuard.Domain.csproj",
+        "packagesPath": "C:\\Users\\Magang ICT\\.nuget\\packages\\",
+        "outputPath": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Magang ICT\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.428/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.QueueManager\\PrintGuard.QueueManager.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.QueueManager\\PrintGuard.QueueManager.csproj",
+        "projectName": "PrintGuard.QueueManager",
+        "projectPath": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.QueueManager\\PrintGuard.QueueManager.csproj",
+        "packagesPath": "C:\\Users\\Magang ICT\\.nuget\\packages\\",
+        "outputPath": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.QueueManager\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Magang ICT\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0-windows"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0-windows7.0": {
+            "targetAlias": "net8.0-windows",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0-windows7.0": {
+          "targetAlias": "net8.0-windows",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.428/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Service\\PrintGuard.Service.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Service\\PrintGuard.Service.csproj",
+        "projectName": "PrintGuard.Service",
+        "projectPath": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Service\\PrintGuard.Service.csproj",
+        "packagesPath": "C:\\Users\\Magang ICT\\.nuget\\packages\\",
+        "outputPath": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Service\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Magang ICT\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0-windows"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0-windows7.0": {
+            "targetAlias": "net8.0-windows",
+            "projectReferences": {
+              "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Application\\PrintGuard.Application.csproj": {
+                "projectPath": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Application\\PrintGuard.Application.csproj"
+              },
+              "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Domain\\PrintGuard.Domain.csproj": {
+                "projectPath": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.Domain\\PrintGuard.Domain.csproj"
+              },
+              "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.QueueManager\\PrintGuard.QueueManager.csproj": {
+                "projectPath": "D:\\1. MAGANG\\2. ULHAQ\\print-agent\\src\\PrintGuard.QueueManager\\PrintGuard.QueueManager.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0-windows7.0": {
+          "targetAlias": "net8.0-windows",
+          "dependencies": {
+            "Microsoft.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Hosting.WindowsServices": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.428/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
