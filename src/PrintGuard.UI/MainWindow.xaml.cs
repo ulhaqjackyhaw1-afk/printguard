@@ -41,7 +41,7 @@ public partial class MainWindow : Window
         };
         _http = new HttpClient(handler)
         {
-            BaseAddress = new Uri("https://localhost:7148/api/v1/")
+            BaseAddress = new Uri("http://localhost:5000/api/v1/")
         };
 
         Loaded += MainWindow_Loaded;

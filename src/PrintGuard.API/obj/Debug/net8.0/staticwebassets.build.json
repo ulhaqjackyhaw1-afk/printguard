@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "aj9RzQzC0fS9qt3HYv4sxmOgVJWN2DdlvmkiPcC1qeE=",
+  "Source": "PrintGuard.API",
+  "BasePath": "_content/PrintGuard.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

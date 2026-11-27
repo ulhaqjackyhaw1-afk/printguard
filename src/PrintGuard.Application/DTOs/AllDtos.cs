@@ -8,8 +8,6 @@ public record ApiResponse<T>(
     DateTime? Timestamp = null
 )
 {
-    public DateTime Timestamp { get; init; } = DateTime.UtcNow;
-
     public static ApiResponse<T> Ok(T data, string message = "Request successful") =>
         new(true, message, data, null, DateTime.UtcNow);
 

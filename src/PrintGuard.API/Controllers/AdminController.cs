@@ -68,7 +68,7 @@ public class AdminController : ControllerBase
         return Ok(result);
     }
 
-    [PATCH("users/{id:long}/status")]
+    [HttpPatch("users/{id:long}/status")]
     public async Task<IActionResult> SetUserStatus(long id, [FromBody] bool isActive)
     {
         var adminId = GetAdminId();

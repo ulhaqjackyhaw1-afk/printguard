@@ -4,3 +4,13 @@ D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\Pr
 D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\PrintGuard.Application.AssemblyInfo.cs
 D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\PrintGuard.Application.csproj.CoreCompileInputs.cache
 D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\PrintGuard.Application.sourcelink.json
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\bin\Debug\net8.0\PrintGuard.Application.deps.json
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\bin\Debug\net8.0\PrintGuard.Application.dll
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\bin\Debug\net8.0\PrintGuard.Application.pdb
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\bin\Debug\net8.0\PrintGuard.Domain.dll
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\bin\Debug\net8.0\PrintGuard.Domain.pdb
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\PrintGua.1EED4600.Up2Date
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\PrintGuard.Application.dll
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\refint\PrintGuard.Application.dll
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\PrintGuard.Application.pdb
+D:\1. MAGANG\2. ULHAQ\print-agent\src\PrintGuard.Application\obj\Debug\net8.0\ref\PrintGuard.Application.dll

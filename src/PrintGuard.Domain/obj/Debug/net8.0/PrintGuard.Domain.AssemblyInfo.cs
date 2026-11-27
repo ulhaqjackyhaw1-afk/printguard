@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PrintGuard.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8a3a461a5db2eedeb66e5d1b66fd7b961f2cb9d5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+95d05fff812f1803487283c4a18b19ed8789a55c")]
 [assembly: System.Reflection.AssemblyProductAttribute("PrintGuard.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PrintGuard.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
