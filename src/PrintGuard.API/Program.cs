@@ -124,4 +124,57 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Auto-create database & tables on startup if PostgreSQL is reachable
+try
+{
+    var builderHelper = new Npgsql.NpgsqlConnectionStringBuilder(connectionString);
+    var targetDb = builderHelper.Database;
+    builderHelper.Database = "postgres";
+
+    using var masterConn = new Npgsql.NpgsqlConnection(builderHelper.ConnectionString);
+    await masterConn.OpenAsync();
+
+    using var checkCmd = masterConn.CreateCommand();
+    checkCmd.CommandText = $"SELECT 1 FROM pg_database WHERE datname = '{targetDb}'";
+    var exists = await checkCmd.ExecuteScalarAsync();
+
+    if (exists == null)
+    {
+        using var createCmd = masterConn.CreateCommand();
+        createCmd.CommandText = $"CREATE DATABASE \"{targetDb}\"";
+        await createCmd.ExecuteNonQueryAsync();
+        Console.WriteLine($"[PrintGuard] Created database '{targetDb}' successfully.");
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[PrintGuard] Master DB check: {ex.Message}");
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        await db.Database.EnsureCreatedAsync();
+        Console.WriteLine("[PrintGuard] Database schema verified.");
+
+        // Check if seed data exists
+        if (!await db.AdminUsers.AnyAsync())
+        {
+            var seedPath = Path.Combine(app.Environment.ContentRootPath, "..", "..", "database", "seeds", "seed_data.sql");
+            if (File.Exists(seedPath))
+            {
+                var sql = await File.ReadAllTextAsync(seedPath);
+                await db.Database.ExecuteSqlRawAsync(sql);
+                Console.WriteLine("[PrintGuard] Seeded initial database records.");
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[PrintGuard] Database initialization error: {ex.Message}");
+    }
+}
+
 app.Run();
