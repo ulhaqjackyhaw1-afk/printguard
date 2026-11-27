@@ -27,10 +27,14 @@ public class Worker : BackgroundService
             // Bypass SSL check for local intranet self-signed certificates if needed
             ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
         };
+        var rawUrl = _config["PrintGuard:ApiBaseUrl"] ?? "http://localhost:5000/api/v1/";
+        if (!rawUrl.EndsWith("/")) rawUrl += "/";
+
         _http = new HttpClient(handler)
         {
-            BaseAddress = new Uri(_config["PrintGuard:ApiBaseUrl"] ?? "https://localhost:7148/api/v1/")
+            BaseAddress = new Uri(rawUrl)
         };
+        _logger.LogInformation("Configured API Base URL: {Url}", rawUrl);
         _spooler = new SpoolerManager();
     }
 
@@ -126,6 +130,10 @@ public class Worker : BackgroundService
                     _logger.LogInformation("Device registered successfully with ID {ComputerId}", _computerId);
                 }
             }
+            else
+            {
+                _logger.LogWarning("Device registration HTTP {Code}: {Body}", res.StatusCode, await res.Content.ReadAsStringAsync(ct));
+            }
         }
         catch (Exception ex)
         {
@@ -167,7 +175,12 @@ public class Worker : BackgroundService
             if (res.IsSuccessStatusCode)
             {
                 var body = await res.Content.ReadFromJsonAsync<ApiResponse<PrintJobResponse>>(cancellationToken: ct);
+                _logger.LogInformation("Print job registered with Central Server. DB ID: {Id}", body?.Data?.Id);
                 return body?.Data?.Id;
+            }
+            else
+            {
+                _logger.LogError("Server rejected print job registration (HTTP {Code}): {Body}", res.StatusCode, await res.Content.ReadAsStringAsync(ct));
             }
         }
         catch (Exception ex)
