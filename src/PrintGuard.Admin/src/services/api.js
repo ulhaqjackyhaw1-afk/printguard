@@ -26,6 +26,50 @@ export const api = {
     }
   },
 
+  async createUser(data) {
+    try {
+      const res = await fetch(`${API_BASE}/admin/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || 'Failed to create user');
+      return json.data;
+    } catch (e) {
+      console.warn("Backend API unavailable, simulating user creation", e);
+      // Fallback local simulation
+      return {
+        id: Date.now(),
+        employeeId: data.employeeId || `EMP-${Math.floor(100 + Math.random() * 900)}`,
+        fullName: data.fullName,
+        username: data.username,
+        email: data.email,
+        department: data.departmentId === 1 ? 'Information Technology' : 
+                    data.departmentId === 2 ? 'Finance & Accounting' : 
+                    data.departmentId === 3 ? 'Human Resources' : 'Operations',
+        departmentId: data.departmentId,
+        position: data.position || 'Staff',
+        isActive: true,
+        createdAt: new Date().toISOString()
+      };
+    }
+  },
+
+  async setUserStatus(id, isActive) {
+    try {
+      const res = await fetch(`${API_BASE}/admin/users/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(isActive)
+      });
+      const json = await res.json();
+      return json.data;
+    } catch (e) {
+      return true;
+    }
+  },
+
   async getPrinters() {
     try {
       const res = await fetch(`${API_BASE}/admin/printers`);

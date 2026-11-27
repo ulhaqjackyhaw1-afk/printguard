@@ -47,12 +47,15 @@ public class AdminService : IAdminService
             .OrderBy(d => d.Date)
             .ToList();
 
-        // Top Employees
-        var topEmployees = await _db.PrintJobs
+        // Top Employees (client-evaluated grouping for guaranteed EF Core translation)
+        var completedJobs = await _db.PrintJobs
             .Where(j => j.UserId != null && j.Status == "COMPLETED")
             .Include(j => j.User)
             .ThenInclude(u => u!.Department)
-            .GroupBy(j => new { j.UserId, j.User!.FullName, Dept = j.User.Department != null ? j.User.Department.Name : "N/A" })
+            .ToListAsync();
+
+        var topEmployees = completedJobs
+            .GroupBy(j => new { j.UserId, FullName = j.User?.FullName ?? "Unknown", Dept = j.User?.Department?.Name ?? "N/A" })
             .Select(g => new TopUserStat(
                 g.Key.FullName,
                 g.Key.Dept,
@@ -61,12 +64,15 @@ public class AdminService : IAdminService
             ))
             .OrderByDescending(t => t.TotalPages)
             .Take(5)
-            .ToListAsync();
+            .ToList();
 
         // Most Used Printers
-        var topPrinters = await _db.PrintJobs
+        var allJobsWithPrinters = await _db.PrintJobs
             .Include(j => j.Printer)
-            .GroupBy(j => j.Printer.Name)
+            .ToListAsync();
+
+        var topPrinters = allJobsWithPrinters
+            .GroupBy(j => j.Printer?.Name ?? "Unknown")
             .Select(g => new PrinterUsageStat(
                 g.Key,
                 g.Count(),
@@ -74,7 +80,7 @@ public class AdminService : IAdminService
             ))
             .OrderByDescending(p => p.TotalJobs)
             .Take(5)
-            .ToListAsync();
+            .ToList();
 
         var summary = new DashboardSummaryResponse(
             totalEmployees,
