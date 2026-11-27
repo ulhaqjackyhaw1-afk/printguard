@@ -81,6 +81,18 @@ export const api = {
     }
   },
 
+  async scanPrinters() {
+    try {
+      const res = await fetch(`${API_BASE}/admin/printers/scan`, { method: 'POST' });
+      if (!res.ok) throw new Error('Failed to scan printers');
+      const json = await res.json();
+      return json.data || [];
+    } catch (e) {
+      console.warn("Could not scan printers via API", e);
+      return [];
+    }
+  },
+
   async getComputers() {
     try {
       const res = await fetch(`${API_BASE}/admin/computers`);

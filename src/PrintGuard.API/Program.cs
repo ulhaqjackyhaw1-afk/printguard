@@ -159,6 +159,9 @@ using (var scope = app.Services.CreateScope())
         await db.Database.EnsureCreatedAsync();
         Console.WriteLine("[PrintGuard] Database schema verified.");
 
+        // Auto-detect and register real physical Windows printers
+        await WindowsPrinterDiscovery.SyncWithDatabaseAsync(db);
+
         // Check if seed data exists
         if (!await db.AdminUsers.AnyAsync())
         {

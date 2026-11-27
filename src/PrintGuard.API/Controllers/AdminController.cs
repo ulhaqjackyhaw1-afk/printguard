@@ -91,6 +91,14 @@ public class AdminController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("printers/scan")]
+    public async Task<IActionResult> ScanLocalPrinters([FromServices] PrintGuard.Infrastructure.Data.ApplicationDbContext db)
+    {
+        await PrintGuard.Infrastructure.Services.WindowsPrinterDiscovery.SyncWithDatabaseAsync(db);
+        var result = await _adminService.GetPrintersAsync();
+        return Ok(result);
+    }
+
     [HttpPost("printers")]
     public async Task<IActionResult> CreatePrinter([FromBody] PrinterDto dto)
     {

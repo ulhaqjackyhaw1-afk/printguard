@@ -462,8 +462,34 @@ export default function App() {
           {activeTab === 'printers' && (
             <div className="bg-white rounded-card border border-slate-200 shadow-sm">
               <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-                <h3 className="font-bold text-slate-800 text-sm">Managed Central Printers</h3>
-                <span className="text-xs text-slate-400">Total {printers.length} registered network devices</span>
+                <div>
+                  <h3 className="font-bold text-slate-800 text-sm">Managed Central Printers</h3>
+                  <span className="text-xs text-slate-400">Total {printers.length} registered network devices</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={async () => {
+                      setLoading(true);
+                      try {
+                        const updated = await api.scanPrinters();
+                        if (updated.length > 0) {
+                          setPrinters(updated);
+                          setSuccessToast(`Sinkronisasi sukses! ${updated.length} printer fisik/lokal terdeteksi.`);
+                        } else {
+                          const p = await api.getPrinters();
+                          setPrinters(p);
+                        }
+                      } finally {
+                        setLoading(false);
+                        setTimeout(() => setSuccessToast(''), 4000);
+                      }
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Scan &amp; Sync Local Printers
+                  </button>
+                </div>
               </div>
 
               <table className="w-full text-left text-xs">
