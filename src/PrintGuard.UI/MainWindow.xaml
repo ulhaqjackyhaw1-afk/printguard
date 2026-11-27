@@ -120,7 +120,7 @@
                 <Button x:Name="BtnCancel" Content="Cancel Print Job" Style="{StaticResource SecondaryButton}" Height="36" Click="BtnCancel_Click"/>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,0">
-                    <Ellipse Width="8" Height="8" Fill="{StaticResource SuccessColor}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                    <Ellipse Width="8" Height="8" Fill="{StaticResource SuccessBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/>
                     <TextBlock Text="Server Connected" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
