@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Printer, Users, Monitor, FileText, CheckCircle2, XCircle, 
   Clock, ShieldAlert, BarChart3, Settings, LogOut, Search,
-  Download, Plus, RefreshCw, AlertTriangle
+  Download, Plus, RefreshCw, AlertTriangle, X
 } from 'lucide-react';
 import { api } from './services/api';
 
@@ -16,6 +16,21 @@ export default function App() {
   const [auditLogs, setAuditLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Add Employee Modal state
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [successToast, setSuccessToast] = useState('');
+  const [userForm, setUserForm] = useState({
+    fullName: '',
+    username: '',
+    password: '',
+    employeeId: '',
+    email: '',
+    departmentId: 1,
+    position: ''
+  });
 
   // Load initial data
   useEffect(() => {
@@ -49,6 +64,51 @@ export default function App() {
     }
   };
 
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    setFormError('');
+
+    if (!userForm.fullName || !userForm.username || !userForm.password) {
+      setFormError('Nama lengkap, username, dan password wajib diisi.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const newUser = await api.createUser({
+        ...userForm,
+        departmentId: Number(userForm.departmentId)
+      });
+
+      setUsers([newUser, ...users]);
+      setIsAddUserOpen(false);
+      setUserForm({
+        fullName: '',
+        username: '',
+        password: '',
+        employeeId: '',
+        email: '',
+        departmentId: 1,
+        position: ''
+      });
+
+      setSuccessToast(`Karyawan ${newUser.fullName} berhasil ditambahkan!`);
+      setTimeout(() => setSuccessToast(''), 4000);
+    } catch (err) {
+      setFormError(err.message || 'Gagal menambahkan karyawan.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleToggleStatus = async (user) => {
+    const nextStatus = !user.isActive;
+    await api.setUserStatus(user.id, nextStatus);
+    setUsers(users.map(u => u.id === user.id ? { ...u, isActive: nextStatus } : u));
+    setSuccessToast(`Status ${user.fullName} diubah menjadi ${nextStatus ? 'ACTIVE' : 'INACTIVE'}`);
+    setTimeout(() => setSuccessToast(''), 3000);
+  };
+
   const exportHistoryCSV = () => {
     const headers = ["Job ID", "Date", "Employee", "Department", "Computer", "Document", "Printer", "Pages", "Copies", "Color Mode", "Status"];
     const rows = printJobs.map(j => [
@@ -57,7 +117,7 @@ export default function App() {
       j.userName,
       j.departmentName,
       j.computerHostname,
-      `"${j.documentName.replace(/"/g, '""')}"`,
+      `"${(j.documentName || '').replace(/"/g, '""')}"`,
       j.printerName,
       j.totalPages,
       j.copies,
@@ -76,6 +136,14 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-[#F8FAFC]">
+      {/* Toast Notification */}
+      {successToast && (
+        <div className="fixed top-5 right-5 z-50 bg-emerald-600 text-white px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2 text-xs font-semibold animate-bounce">
+          <CheckCircle2 className="w-4 h-4" />
+          {successToast}
+        </div>
+      )}
+
       {/* Sidebar Navigation */}
       <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between">
         <div>
@@ -242,20 +310,20 @@ export default function App() {
                       <div>
                         <div className="flex justify-between text-xs font-medium mb-1">
                           <span className="text-slate-600">Black & White (Mono)</span>
-                          <span className="font-bold text-slate-900">{Math.round((dashboardData.monochromePages / dashboardData.totalPrintedPages) * 100)}%</span>
+                          <span className="font-bold text-slate-900">{dashboardData.totalPrintedPages > 0 ? Math.round((dashboardData.monochromePages / dashboardData.totalPrintedPages) * 100) : 0}%</span>
                         </div>
                         <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                          <div className="bg-slate-700 h-full rounded-full" style={{ width: `${(dashboardData.monochromePages / dashboardData.totalPrintedPages) * 100}%` }}></div>
+                          <div className="bg-slate-700 h-full rounded-full" style={{ width: `${dashboardData.totalPrintedPages > 0 ? (dashboardData.monochromePages / dashboardData.totalPrintedPages) * 100 : 0}%` }}></div>
                         </div>
                       </div>
 
                       <div>
                         <div className="flex justify-between text-xs font-medium mb-1">
                           <span className="text-slate-600">Color Printing</span>
-                          <span className="font-bold text-slate-900">{Math.round((dashboardData.colorPages / dashboardData.totalPrintedPages) * 100)}%</span>
+                          <span className="font-bold text-slate-900">{dashboardData.totalPrintedPages > 0 ? Math.round((dashboardData.colorPages / dashboardData.totalPrintedPages) * 100) : 0}%</span>
                         </div>
                         <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                          <div className="bg-blue-500 h-full rounded-full" style={{ width: `${(dashboardData.colorPages / dashboardData.totalPrintedPages) * 100}%` }}></div>
+                          <div className="bg-blue-500 h-full rounded-full" style={{ width: `${dashboardData.totalPrintedPages > 0 ? (dashboardData.colorPages / dashboardData.totalPrintedPages) * 100 : 0}%` }}></div>
                         </div>
                       </div>
                     </div>
@@ -273,23 +341,27 @@ export default function App() {
                 <div className="bg-white p-6 rounded-card border border-slate-200 shadow-sm">
                   <h3 className="font-bold text-slate-800 text-sm mb-4">Top Printing Employees</h3>
                   <div className="space-y-3">
-                    {dashboardData.topEmployees.map((emp, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100">
-                        <div className="flex items-center gap-3">
-                          <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center text-xs">
-                            {i + 1}
+                    {dashboardData.topEmployees.length === 0 ? (
+                      <p className="text-xs text-slate-400 py-4 text-center">Belum ada riwayat cetak selesai.</p>
+                    ) : (
+                      dashboardData.topEmployees.map((emp, i) => (
+                        <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100">
+                          <div className="flex items-center gap-3">
+                            <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center text-xs">
+                              {i + 1}
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-slate-800">{emp.fullName}</p>
+                              <p className="text-[10px] text-slate-500">{emp.department}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-xs font-bold text-slate-800">{emp.fullName}</p>
-                            <p className="text-[10px] text-slate-500">{emp.department}</p>
+                          <div className="text-right">
+                            <p className="text-xs font-bold text-slate-900">{emp.totalPages} pages</p>
+                            <p className="text-[10px] text-slate-400">{emp.totalJobs} jobs</p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-xs font-bold text-slate-900">{emp.totalPages} pages</p>
-                          <p className="text-[10px] text-slate-400">{emp.totalJobs} jobs</p>
-                        </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </div>
 
@@ -332,7 +404,10 @@ export default function App() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <button className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition">
+                <button 
+                  onClick={() => setIsAddUserOpen(true)}
+                  className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition"
+                >
                   <Plus className="w-3.5 h-3.5" />
                   Add Employee
                 </button>
@@ -354,19 +429,27 @@ export default function App() {
                     <tr key={u.id} className="hover:bg-slate-50/50">
                       <td className="px-6 py-3.5">
                         <div className="font-semibold text-slate-800">{u.fullName}</div>
-                        <div className="text-[10px] text-slate-400">{u.employeeId || 'No ID'} • {u.email}</div>
+                        <div className="text-[10px] text-slate-400">{u.employeeId || 'No ID'} • {u.email || '-'}</div>
                       </td>
                       <td className="px-6 py-3.5 font-mono text-slate-600">{u.username}</td>
                       <td className="px-6 py-3.5 text-slate-700">{u.department || 'Unassigned'}</td>
                       <td className="px-6 py-3.5 text-slate-500">{u.position || '-'}</td>
                       <td className="px-6 py-3.5">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${u.isActive ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+                        <button 
+                          onClick={() => handleToggleStatus(u)}
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition hover:opacity-80 ${u.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-red-50 text-red-600 border border-red-200'}`}
+                          title="Klik untuk mengubah status aktif/nonaktif"
+                        >
                           {u.isActive ? 'ACTIVE' : 'INACTIVE'}
-                        </span>
+                        </button>
                       </td>
                       <td className="px-6 py-3.5 text-right space-x-2">
-                        <button className="text-blue-600 hover:underline font-medium">Edit</button>
-                        <button className="text-slate-500 hover:underline">Reset Pwd</button>
+                        <button 
+                          onClick={() => handleToggleStatus(u)}
+                          className="text-blue-600 hover:underline font-medium"
+                        >
+                          {u.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -380,10 +463,7 @@ export default function App() {
             <div className="bg-white rounded-card border border-slate-200 shadow-sm">
               <div className="p-5 border-b border-slate-100 flex items-center justify-between">
                 <h3 className="font-bold text-slate-800 text-sm">Managed Central Printers</h3>
-                <button className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition">
-                  <Plus className="w-3.5 h-3.5" />
-                  Add Network Printer
-                </button>
+                <span className="text-xs text-slate-400">Total {printers.length} registered network devices</span>
               </div>
 
               <table className="w-full text-left text-xs">
@@ -409,7 +489,7 @@ export default function App() {
                       <td className="px-6 py-3.5 font-mono text-slate-700">{p.ipAddress}</td>
                       <td className="px-6 py-3.5 text-slate-500">{p.location}</td>
                       <td className="px-6 py-3.5 font-mono text-slate-500">{p.printerServer}</td>
-                      <td className="px-6 py-3.5 text-slate-700">{p.totalPages} pages ({p.totalJobs} jobs)</td>
+                      <td className="px-6 py-3.5 text-slate-700">{p.totalPages || 0} pages ({p.totalJobs || 0} jobs)</td>
                       <td className="px-6 py-3.5">
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600">
                           ONLINE
@@ -497,29 +577,35 @@ export default function App() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {printJobs.map((j) => (
-                    <tr key={j.id} className="hover:bg-slate-50/50">
-                      <td className="px-6 py-3.5 font-mono text-slate-600">{j.serverJobId}</td>
-                      <td className="px-6 py-3.5 text-slate-500">{new Date(j.submittedAt).toLocaleTimeString()}</td>
-                      <td className="px-6 py-3.5">
-                        <div className="font-semibold text-slate-800">{j.userName || 'Unauthenticated'}</div>
-                        <div className="text-[10px] text-slate-400">{j.departmentName || j.computerHostname}</div>
-                      </td>
-                      <td className="px-6 py-3.5 font-medium text-slate-700 max-w-xs truncate" title={j.documentName}>
-                        {j.documentName}
-                      </td>
-                      <td className="px-6 py-3.5 text-slate-600">{j.printerName}</td>
-                      <td className="px-6 py-3.5 text-slate-700">{j.totalPages}p × {j.copies}</td>
-                      <td className="px-6 py-3.5">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${j.colorMode === 'COLOR' ? 'bg-purple-50 text-purple-600' : 'bg-slate-100 text-slate-600'}`}>
-                          {j.colorMode}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3.5">
-                        <StatusBadge status={j.status} />
-                      </td>
+                  {printJobs.length === 0 ? (
+                    <tr>
+                      <td colSpan="8" className="px-6 py-8 text-center text-slate-400">Belum ada aktivitas cetak.</td>
                     </tr>
-                  ))}
+                  ) : (
+                    printJobs.map((j) => (
+                      <tr key={j.id} className="hover:bg-slate-50/50">
+                        <td className="px-6 py-3.5 font-mono text-slate-600">{j.serverJobId}</td>
+                        <td className="px-6 py-3.5 text-slate-500">{new Date(j.submittedAt).toLocaleTimeString()}</td>
+                        <td className="px-6 py-3.5">
+                          <div className="font-semibold text-slate-800">{j.userName || 'Unauthenticated'}</div>
+                          <div className="text-[10px] text-slate-400">{j.departmentName || j.computerHostname}</div>
+                        </td>
+                        <td className="px-6 py-3.5 font-medium text-slate-700 max-w-xs truncate" title={j.documentName}>
+                          {j.documentName}
+                        </td>
+                        <td className="px-6 py-3.5 text-slate-600">{j.printerName}</td>
+                        <td className="px-6 py-3.5 text-slate-700">{j.totalPages}p × {j.copies}</td>
+                        <td className="px-6 py-3.5">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${j.colorMode === 'COLOR' ? 'bg-purple-50 text-purple-600' : 'bg-slate-100 text-slate-600'}`}>
+                            {j.colorMode}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3.5">
+                          <StatusBadge status={j.status} />
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -559,6 +645,139 @@ export default function App() {
           )}
         </div>
       </main>
+
+      {/* Add Employee Modal */}
+      {isAddUserOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                  <Users className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-slate-800 text-sm">Tambah Karyawan Baru</h3>
+              </div>
+              <button 
+                onClick={() => setIsAddUserOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-md"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateUser} className="p-6 space-y-4">
+              {formError && (
+                <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-xs">
+                  {formError}
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap *</label>
+                  <input 
+                    type="text" 
+                    placeholder="Contoh: Rian Pratama"
+                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
+                    value={userForm.fullName}
+                    onChange={(e) => setUserForm({ ...userForm, fullName: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Username *</label>
+                  <input 
+                    type="text" 
+                    placeholder="rian.pratama"
+                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 font-mono"
+                    value={userForm.username}
+                    onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Password *</label>
+                  <input 
+                    type="password" 
+                    placeholder="Min. 6 karakter"
+                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
+                    value={userForm.password}
+                    onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">NIP / ID Karyawan</label>
+                  <input 
+                    type="text" 
+                    placeholder="EMP-005"
+                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 font-mono"
+                    value={userForm.employeeId}
+                    onChange={(e) => setUserForm({ ...userForm, employeeId: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Email Perusahaan</label>
+                <input 
+                  type="email" 
+                  placeholder="rian.pratama@company.local"
+                  className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
+                  value={userForm.email}
+                  onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Departemen</label>
+                  <select 
+                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 bg-white"
+                    value={userForm.departmentId}
+                    onChange={(e) => setUserForm({ ...userForm, departmentId: Number(e.target.value) })}
+                  >
+                    <option value={1}>Information Technology</option>
+                    <option value={2}>Finance & Accounting</option>
+                    <option value={3}>Human Resources</option>
+                    <option value={4}>Operations</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Posisi / Jabatan</label>
+                  <input 
+                    type="text" 
+                    placeholder="Staff IT / Analis"
+                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500"
+                    value={userForm.position}
+                    onChange={(e) => setUserForm({ ...userForm, position: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddUserOpen(false)}
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Menyimpan...' : 'Simpan Karyawan'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
